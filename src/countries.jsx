@@ -13,7 +13,7 @@ const CountryCards = ({ name, flag, abbr }) => {
             borderRadius: '10px',
             border: '1px solid gray'
         }}>
-            <img src={flag} alt={abbr} height={80} width={80} />
+            <img src={flag} alt={`Flag of ${name} (${abbr})`} height={80} width={80} />
             <h2>{name}</h2>
         </div>
     );
@@ -26,12 +26,27 @@ export default function Countries() {
 
     useEffect(() => {
         fetch(API)
-            .then(res => res.json())
-            .then(jsonData => setData(jsonData));
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(jsonData => setData(jsonData))
+            .catch(err => {
+                console.error("Error fetching data: ", err);
+            });
     }, []);
 
     return (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+        <div style={{
+            height: "600px",
+            overflowY: "scroll",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            padding: "10px"
+        }}>
             {data.map(({ name, flag, abbr }) => (
                 <CountryCards key={abbr} name={name} flag={flag} abbr={abbr} />
             ))}
